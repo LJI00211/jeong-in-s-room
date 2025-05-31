@@ -1,0 +1,60 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+
+// 전역 변수 선언 (초기화 O)
+unsigned char fnd[]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xd8,0x80,0x98};
+unsigned char digit_sel[4] ={0xFE, 0xFD, 0xFB, 0xF7};
+int number=0;
+int prevA=1;
+int prevB=1;
+
+int main(void)
+{
+   DDRA=0xff; // fnd a~g를 사용하기 위해 출력포트 설정.
+   PORTA=0xff; // 초기값을 1을 주어 off 상태로 설정.
+   
+   DDRB=0xff;  // fnd 4개를 제어하기 위해 출력포트 설정.
+   PORTB=0x00; // q0~4 초기값을 0을 주어 off 상태로 설정.
+   
+   DDRC=0x00; // s/w0~2를 입력받기 위해 입력포트로 설정.
+   PORTC=0xff; // s/w0~2, 초기값을 0으로 설정.
+
+   while(1)
+   {
+      int sw_a= PINC&(1<<0); // 액티브 로우일 때 동작하고 pc0만 감지!
+      int sw_b= PINC&(1<<1); // 액티브 로우일 때 동작하고 pc1만 감지!
+      
+      if (sw_a==0&&prevA!=0) // 버튼을 딱한번 눌렀을 때 작동하기 위한 조건
+      {
+         if(number<9999) // 숫자가 9999를 넘지 않았다면 증가 시키는 조건(수정)
+         {
+            number++;
+         }
+      }
+      prevA=sw_a;
+      
+      if (sw_b==0&&prevB!=0)
+      {
+         if(number>0) // 숫자가 0보다 크면 감소(수정)
+         {
+            number--;
+         }
+      }
+      prevB=sw_b;
+      
+      int n1000=number/1000;
+      int n100=(number/100)%10;
+      int n10=(number/10)%10;
+      int n1=number%10;
+      for (int i = 0; i < 4; i++) 
+      {
+         if (i == 0) { PORTA = fnd[n1000]; PORTB = digit_sel[0]; }
+         if (i == 1) { PORTA = fnd[n100];  PORTB = digit_sel[1]; }
+         if (i == 2) { PORTA = fnd[n10];   PORTB = digit_sel[2]; }
+         if (i == 3) { PORTA = fnd[n1];    PORTB = digit_sel[3]; }
+         _delay_ms(2); // 스캐닝 방식을 위해 짧게 지연시간을 주웠다.
+      }
+   }
+   return 0;
+}
