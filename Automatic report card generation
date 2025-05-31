@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define STU 5
+#define SUB 3
+#define COL (SUB + 2)  // 과목 3개 + 합계 1개 + 등수 1개
+
+int i, j, sum;
+int arr[STU][COL] = { 0 };
+char names[STU] = { 'A', 'B', 'C', 'D', 'E' };  // 학생 이름 배열
+
+void swap(int a[], int b[], int size, char* name1, char* name2) {
+	int temp;
+	for (int i = 0; i < size; i++) {
+		temp = a[i];
+		a[i] = b[i];
+		b[i] = temp;
+	}
+	// 이름도 같이 바꿔야 함
+	char tempName = *name1;
+	*name1 = *name2;
+	*name2 = tempName;
+}
+
+int main() {
+	srand((unsigned int)time(NULL));
+
+	// 성적 입력 및 합계 계산
+	for (i = 0; i < STU; i++) {
+		printf("%c학생의 성적 입력 \n", names[i]);
+		sum = 0;
+
+		for (j = 0; j < SUB; j++) {
+			arr[i][j] = rand() % 101;
+			printf("%d ", arr[i][j]);
+			sum += arr[i][j];
+		}
+		arr[i][SUB] = sum;  // 합계 저장
+		printf(" | 합계: %d\n", arr[i][SUB]);
+	}
+
+	// 등수 계산
+	for (i = 0; i < STU; i++) {
+		arr[i][4] = 1;
+		for (j = 0; j < STU; j++) {
+			if (arr[i][3] < arr[j][3]) {
+				arr[i][4]++;
+			}
+		}
+	}
+
+	// 등수 기준으로 정렬 (버블 정렬)
+	for (i = 0; i < STU - 1; i++) {
+		for (j = 0; j < STU - i - 1; j++) {
+			if (arr[j][4] > arr[j + 1][4]) {
+				swap(arr[j], arr[j + 1], COL, &names[j], &names[j + 1]);  // 학생 이름도 함께 교환
+			}
+		}
+	}
+
+	// 정렬된 성적표 출력
+	printf("\n=== 성적표 (등수순 정렬) ===\n");
+	printf("이름\tEng\tKor\tMath\tSum\tRank\n");
+	for (i = 0; i < STU; i++) {
+		printf("[%c]\t", names[i]);  // 정렬된 이름 출력
+		for (j = 0; j < COL; j++) {
+			printf("%d\t", arr[i][j]);
+		}
+		printf("\n");
+	}
+
+	return 0;
+}
