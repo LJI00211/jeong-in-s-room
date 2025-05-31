@@ -1,0 +1,33 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+
+unsigned char fnd[] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xd8, 0x80, 0x98};
+unsigned char digit_sel[4] = {0xFE, 0xFD, 0xFB, 0xF7};
+int current_digit_value = 0;
+
+int main(void)
+{
+    DDRA = 0xff;
+    PORTA = 0xff;
+
+    DDRB = 0xff;
+    PORTB = 0xFF;
+
+    while(1)
+    {
+        for (int i = 0; i < 4; i++) {
+            PORTA = fnd[current_digit_value];
+            PORTB = digit_sel[i];
+            _delay_ms(2);
+        }
+
+        current_digit_value++;
+        if (current_digit_value > 9) {
+            current_digit_value = 0;
+        }
+
+        _delay_ms(300);
+    }
+    return 0;
+}

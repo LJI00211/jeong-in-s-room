@@ -1,0 +1,26 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+
+int main (void)
+{
+DDRA=0xff; // pa port를 출력으로 설정, 1: 출력, 0: 입력, ddr= data, direction resistor, 0x1111 1111 
+PORTA= 0x00; // pa port를 초기값을 “0”으로 설정. pa0~7 꺼짐신호를 내보내는 것.
+
+unsigned char i;
+          while(1)
+          {
+           for(i=0;i<8;i++)
+           {
+            PORTA=PORTA&(1<<0);
+            _delay_ms(50); 
+           }
+           for(i=0;i<8;i++)
+           {
+            PORTA=PORTA&(0x80>>i);
+            _delay_ms(50); 
+           }
+          }
+ 
+return 0;
+}
