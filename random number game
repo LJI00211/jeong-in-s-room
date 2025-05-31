@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h> // 메모리 할당, 난수 생성, 수학적 변환, 프로그램 종료를 제공
+#include <time.h> // 현재 시간 조회, 시간 차이 계산, 난수 시드 설정을 제공
+
+int randnumber; // 난수 저장 변수
+int num; // 입력 정수 저장 변수
+int i; // 반복문 횟수 변수
+int win = 0; // 정답을 맞추었을 때 저장할 변수
+
+int main()
+{
+    srand((unsigned int)time(NULL));  // 먼저 시드 설정, srand ()함수는 unsigned int 형을 받아서 기능을 수행하는 함수이므로
+    //time(NULL)의 데이터 타입은 time_t이므로 형 변환을 위해 저렇게 작성한 것
+    //time(NULL)은 1970.01.01~현재 시간을 초단위로 변환하여 메모리에 time_t형으로 반환 
+
+    // 게임을 계속할지 결정하는 변수
+    char playAgain;
+
+    do {
+        randnumber = rand() % 100;        // 그 다음에 난수 생성
+        win = 0; // 게임 시작 시 승리 여부 초기화
+
+        for (i = 0; i < 7; i++) {
+            printf("0~99까지의 정수 값을 입력하세요: ");
+            scanf_s("%d", &num);
+
+            if (num == randnumber) {
+                printf("정답입니다. \n");
+                win = 1;
+                break;
+            }
+            else if (num < randnumber) {
+                printf("high \n");
+            }
+            else {
+                printf("low \n");
+            }
+        }
+
+        if (win) {
+            printf("game win \n");
+        }
+        else {
+            printf("game lose. 정답은 %d \n", randnumber);
+        }
+
+        // 게임을 다시 할지 물어봄
+        printf("다시 게임을 하시겠습니까? (y/n): ");
+        scanf_s(" %c", &playAgain);  // 공백을 넣어 이전 버퍼의 \n을 처리
+
+    } while (playAgain == 'y' || playAgain == 'Y'); // 사용자가 'y' 또는 'Y'를 입력하면 계속 진행
+
+    return 0;
+}
